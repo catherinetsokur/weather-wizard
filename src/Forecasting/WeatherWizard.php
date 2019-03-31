@@ -2,6 +2,7 @@
 
 namespace App\Forecasting;
 
+use Symfony\Component\Cache\Simple\FilesystemCache;
 use App\Forecasting\TemperatureScale\AbstractTemperatureScale;
 
 class WeatherWizard
@@ -18,6 +19,19 @@ class WeatherWizard
     protected $weatherProviders;
 
     /**
+     * Simple filesystem cache.
+     * Note: In real life I'd use Redis or Memcache instead, but in the scope of this exercise I chose the simple path.
+     * @var FilesystemCache
+     */
+    protected $cache;
+
+    /**
+     * Set TTL to 1 minute for keeping forecasts in cache.
+     * (could also go somewhere into the config).
+     */
+    protected const CACHE_TTL_SEC = 60;
+
+    /**
      * @param AbstractTemperatureScale $temperatureScale
      * @param AbstractWeatherProvider[] $weatherProviders
      */
@@ -25,6 +39,7 @@ class WeatherWizard
     {
         $this->temperatureScale = $temperatureScale;
         $this->weatherProviders = $weatherProviders;
+        $this->cache = new FilesystemCache();
     }
 
     /**
@@ -80,7 +95,13 @@ class WeatherWizard
     public function predictForCityAndDay(string $city, int $day): WeatherForecast
     {
         // Try to get forecast from cache
-        // (later)
+        $forecastCacheKey = \strtolower('forecast.'.$city.'.'.\date('Ymd', $day).'.'.$this->temperatureScale->getName());
+        if ($this->cache->has($forecastCacheKey)) {
+            $forecastJson = $this->cache->get($forecastCacheKey, null);
+            if ($forecastJson !== null) {
+                return WeatherForecast::fromJson($forecastJson);
+            }
+        }
 
         // If forecast is expired - request fresh forecast from weather providers
         if (! $this->weatherProviders) {
@@ -96,7 +117,7 @@ class WeatherWizard
         $forecast = $this->boostForecast($forecasts);
 
         // Save into cache with the defined TTL
-        // (later)
+        $this->cache->set($forecastCacheKey, $forecast->getAsJson(), self::CACHE_TTL_SEC);
 
         return $forecast;
     }

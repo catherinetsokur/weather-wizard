@@ -2,13 +2,14 @@
 
 namespace App\Forecasting;
 
+use App\Forecasting\TemperatureScale\TemperatureScaleFactory;
 use App\Forecasting\TemperatureScale\AbstractTemperatureScale;
 
 class WeatherForecast
 {
     /**
      * City, for which the forecast is made.
-     * @var [type]
+     * @var string
      */
     protected $city;
 
@@ -103,5 +104,22 @@ class WeatherForecast
             'scale' => $this->temperatureScale->getName(),
             'hourlyPredictions' => $this->hourlyPredictions,
         ]);
+    }
+
+    /**
+     * Creates a new forecast object from the json string.
+     * @param  string $jsonForecast Forecast in JSON format
+     * @return WeatherForecast
+     */
+    public static function fromJson(string $jsonForecast): self
+    {
+        $forcastData = \json_decode($jsonForecast, true);
+
+        return new self(
+            TemperatureScaleFactory::getByName($forcastData['scale']),
+            $forcastData['city'],
+            $forcastData['day'],
+            $forcastData['hourlyPredictions']
+        );
     }
 }
