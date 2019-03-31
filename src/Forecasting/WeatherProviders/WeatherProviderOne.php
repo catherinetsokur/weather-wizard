@@ -68,6 +68,13 @@ class WeatherProviderOne extends AbstractWeatherProvider
               }
             }';
 
+        // @TODO: Here would be good to have a validation of the response
+        // - if it's a valid json
+        // - if it contains all required fields
+        // - are all fields in expected format
+        // Due to the lack of time I'm assuming that everything is going to be as expected,
+        // which almost never happens in real life.
+
         $responseDecoded = \json_decode($response, true);
         $obtainedScale = TemperatureScaleFactory::getByName($responseDecoded['predictions']['-scale']);
         $hourlyPredictions = [];
