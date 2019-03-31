@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Forecasting\WeatherForecast;
+use App\Forecasting\WeatherWizard;
 use App\Forecasting\TemperatureScale\TemperatureScaleFactory;
 
 class PredictionsController
@@ -17,7 +17,8 @@ class PredictionsController
      */
     public function getByCityToday($city, $temperatureScaleName)
     {
-        $forecast = new WeatherForecast(TemperatureScaleFactory::getByName($temperatureScaleName), $city, \time(), []);
+        $wizard = new WeatherWizard(TemperatureScaleFactory::getByName($temperatureScaleName));
+        $forecast = $wizard->predictForCityAndDay($city, \time());
 
         return JsonResponse::fromJsonString($forecast->getAsJson());
     }
@@ -37,7 +38,8 @@ class PredictionsController
             return new Response('Requested day is out of range', 404);
         }
 
-        $forecast = new WeatherForecast(TemperatureScaleFactory::getByName($temperatureScaleName), $city, $requestedDay, []);
+        $wizard = new WeatherWizard(TemperatureScaleFactory::getByName($temperatureScaleName));
+        $forecast = $wizard->predictForCityAndDay($city, $requestedDay);
 
         return JsonResponse::fromJsonString($forecast->getAsJson());
     }
