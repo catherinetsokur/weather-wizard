@@ -33,8 +33,7 @@ class PredictionsController
         $startOfTheDay = \strtotime(\date('Ymd 00:00:00'));
 
         // Only provide predictions within 10 days interval from today
-        if ($requestedDay < $startOfTheDay || $requestedDay >= \strtotime('+10 days', $startOfTheDay))
-        {
+        if ($requestedDay < $startOfTheDay || $requestedDay >= \strtotime('+10 days', $startOfTheDay)) {
             return new Response('Requested day is out of range', 404);
         }
 
