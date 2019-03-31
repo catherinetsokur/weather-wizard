@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Forecasting\WeatherWizard;
 use App\Forecasting\TemperatureScale\TemperatureScaleFactory;
+use App\Forecasting\WeatherProviders\WeatherProvidersPool;
+use App\Forecasting\ForecastNotFoundException;
 
 class PredictionsController
 {
@@ -17,8 +19,17 @@ class PredictionsController
      */
     public function getByCityToday($city, $temperatureScaleName)
     {
-        $wizard = new WeatherWizard(TemperatureScaleFactory::getByName($temperatureScaleName), []);
-        $forecast = $wizard->predictForCityAndDay($city, \time());
+        try {
+            $wizard = new WeatherWizard(
+                TemperatureScaleFactory::getByName($temperatureScaleName),
+                WeatherProvidersPool::getAllAvailable()
+            );
+            $forecast = $wizard->predictForCityAndDay($city, \time());
+        } catch (ForecastNotFoundException $e) {
+            return new Response('Wizard cannot predict this forecast because: '.$e->getMessage(), 404);
+        } catch (\Exception $e) {
+            return new Response('Something mysterious has happened... '.$e->getMessage(), 500);
+        }
 
         return JsonResponse::fromJsonString($forecast->getAsJson());
     }
@@ -30,16 +41,25 @@ class PredictionsController
      */
     public function getByCityAndDay($city, $day, $temperatureScaleName)
     {
-        $requestedDay = \strtotime($day);
-        $startOfTheDay = \strtotime(\date('Ymd 00:00:00'));
+        try {
+            $requestedDay = \strtotime($day);
+            $startOfTheDay = \strtotime(\date('Ymd 00:00:00'));
 
-        // Only provide predictions within 10 days interval from today
-        if ($requestedDay < $startOfTheDay || $requestedDay >= \strtotime('+10 days', $startOfTheDay)) {
-            return new Response('Requested day is out of range', 404);
+            // Only provide predictions within 10 days interval from today
+            if ($requestedDay < $startOfTheDay || $requestedDay >= \strtotime('+10 days', $startOfTheDay)) {
+                throw new ForecastNotFoundException('Requested day is out of range');
+            }
+
+            $wizard = new WeatherWizard(
+                TemperatureScaleFactory::getByName($temperatureScaleName),
+                WeatherProvidersPool::getAllAvailable()
+            );
+            $forecast = $wizard->predictForCityAndDay($city, $requestedDay);
+        } catch (ForecastNotFoundException $e) {
+            return new Response('Wizard cannot predict this forecast because: '.$e->getMessage(), 404);
+        } catch (\Exception $e) {
+            return new Response('Something mysterious has happened... '.$e->getMessage(), 500);
         }
-
-        $wizard = new WeatherWizard(TemperatureScaleFactory::getByName($temperatureScaleName), []);
-        $forecast = $wizard->predictForCityAndDay($city, $requestedDay);
 
         return JsonResponse::fromJsonString($forecast->getAsJson());
     }

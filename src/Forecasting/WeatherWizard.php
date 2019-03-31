@@ -35,6 +35,9 @@ class WeatherWizard
      */
     protected function boostForecast(array $forecasts): WeatherForecast
     {
+        if (! $forecasts) {
+            throw new ForecastNotFoundException('There are no available forecasts for performing magic');
+        }
         // Applying magic algorythms here
         // (later)
         // For now will just return the first available
@@ -53,13 +56,14 @@ class WeatherWizard
         // (later)
 
         // If forecast is expired - request fresh forecast from weather providers
+        if (! $this->weatherProviders) {
+            throw new ForecastNotFoundException('There are no available weather providers');
+        }
+
         $forecasts = [];
         foreach ($this->weatherProviders as $provider) {    // @var $provider AbstractWeatherProvider
             $forecasts[] = $provider->getForecast($city, $day, $this->temperatureScale);
         }
-
-        // @TODO: Remove this when we get proviers in
-        $forecasts[] = new WeatherForecast($this->temperatureScale, $city, $day, []);
 
         // Improve the forecast
         $forecast = $this->boostForecast($forecasts);
