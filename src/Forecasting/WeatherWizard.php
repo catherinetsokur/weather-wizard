@@ -38,10 +38,37 @@ class WeatherWizard
         if (! $forecasts) {
             throw new ForecastNotFoundException('There are no available forecasts for performing magic');
         }
+
         // Applying magic algorythms here
-        // (later)
-        // For now will just return the first available
-        return $forecasts[0];
+        $hourlyPredictionsCollection = [];
+        // First get all hourly forecasts and aggregate them by hour
+        foreach ($forecasts as $forecast) {     // @var $forecast WeatherForecast
+            $hourlyPredictions = $forecast->getHourlyPredictions();
+
+            foreach ($hourlyPredictions as $prediction) {
+                $predictionHour = $prediction['hour'];
+                if (! isset($hourlyPredictionsCollection[$predictionHour])) {
+                    $hourlyPredictionsCollection[$predictionHour] = [];
+                }
+                $hourlyPredictionsCollection[$predictionHour][] = $prediction['degrees'];
+            }
+        }
+
+        // Average our aggregated data
+        $boostedPredictions = [];
+        foreach ($hourlyPredictionsCollection as $hour => $degreesList) {
+            if (! empty($degreesList)) {
+                $boostedPredictions[] = [
+                    'hour' => $hour,
+                    'degrees' => \array_sum($degreesList) / \count($degreesList),
+                ];
+            }
+        }
+
+        $finalForecast = clone $forecasts[0];
+        $finalForecast->setHourlyPredictions($boostedPredictions);
+
+        return $finalForecast;
     }
 
     /**

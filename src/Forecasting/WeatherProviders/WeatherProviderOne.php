@@ -3,6 +3,7 @@
 namespace App\Forecasting\WeatherProviders;
 
 use App\Forecasting\WeatherForecast;
+use App\Forecasting\TemperatureScale\TemperatureScaleFactory;
 use App\Forecasting\TemperatureScale\AbstractTemperatureScale;
 
 class WeatherProviderOne extends AbstractWeatherProvider
@@ -12,6 +13,71 @@ class WeatherProviderOne extends AbstractWeatherProvider
         int $day,
         AbstractTemperatureScale $preferredTemperatureScale
     ) : WeatherForecast {
-        return new WeatherForecast($preferredTemperatureScale, $city, $day, []);
+        // Assuming we have made a request and got the following from the third party
+        $response = '{
+              "predictions": {
+                "-scale": "Celcius",
+                "city": "Amsterdam",
+                "date": "20180112",
+                "prediction": [
+                  {
+                    "time": "00:00",
+                    "value": "31"
+                  },
+                  {
+                    "time": "01:00",
+                    "value": "32"
+                  },
+                  {
+                    "time": "02:00",
+                    "value": "25"
+                  },
+                  {
+                    "time": "03:00",
+                    "value": "26"
+                  },
+                  {
+                    "time": "04:00",
+                    "value": "20"
+                  },
+                  {
+                    "time": "05:00",
+                    "value": "22"
+                  },
+                  {
+                    "time": "06:00",
+                    "value": "23"
+                  },
+                  {
+                    "time": "07:00",
+                    "value": "22"
+                  },
+                  {
+                    "time": "08:00",
+                    "value": "25"
+                  },
+                  {
+                    "time": "09:00",
+                    "value": "24"
+                  },
+                  {
+                    "time": "10:00",
+                    "value": "24"
+                  }
+                ]
+              }
+            }';
+
+        $responseDecoded = json_decode($response, true);
+        $obtainedScale = TemperatureScaleFactory::getByName($responseDecoded['predictions']['-scale']);
+        $hourlyPredictions = [];
+        foreach ($responseDecoded['predictions']['prediction'] as $value) {
+            $hourlyPredictions[] = [
+                'hour' => \intval(\substr($value['time'], 0, 2)),
+                'degrees' => \intval($value['value']),
+            ];
+        }
+
+        return new WeatherForecast($obtainedScale, $city, $day, $hourlyPredictions);
     }
 }
