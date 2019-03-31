@@ -15,7 +15,7 @@ class WeatherProviderTwo extends AbstractWeatherProvider
     ) : WeatherForecast {
         // Assuming we have made a request and got the following from the third party
         $response = '<?xml version="1.0" encoding="utf-8" ?>
-<predictions scale="Celcius">
+<predictions scale="Celsius">
     <city>Amsterdam</city>
     <date>20180112</date>
     <prediction>

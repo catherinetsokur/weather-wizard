@@ -16,7 +16,7 @@ class WeatherProviderOne extends AbstractWeatherProvider
         // Assuming we have made a request and got the following from the third party
         $response = '{
               "predictions": {
-                "-scale": "Celcius",
+                "-scale": "Celsius",
                 "city": "Amsterdam",
                 "date": "20180112",
                 "prediction": [

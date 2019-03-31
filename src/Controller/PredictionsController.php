@@ -15,7 +15,7 @@ class PredictionsController
     /**
      * @Route("/predictions/{city}/today/{temperatureScaleName}",
      *      name="predictions_today",
-     *      requirements={"city"="\w+","temperatureScaleName"="celcius|fahrenheit"})
+     *      requirements={"city"="\w+","temperatureScaleName"="celsius|fahrenheit"})
      */
     public function getByCityToday($city, $temperatureScaleName)
     {
@@ -37,7 +37,7 @@ class PredictionsController
     /**
      * @Route("/predictions/{city}/{day}/{temperatureScaleName}",
      *      name="predictions_day",
-     *      requirements={"city"="\w+","day"="\d{8}", "temperatureScaleName"="celcius|fahrenheit"})
+     *      requirements={"city"="\w+","day"="\d{8}", "temperatureScaleName"="celsius|fahrenheit"})
      */
     public function getByCityAndDay($city, $day, $temperatureScaleName)
     {
