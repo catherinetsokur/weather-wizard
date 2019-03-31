@@ -4,10 +4,10 @@ The service gets weather forecasts from certain weather providers, and creates a
 
 ## Diagrams
 ### Sequence
-!(https://github.com/catherinetsokur/weather-wizard/blob/master/docs/WeatherWizard-Sequence.png "Weather Wizard Sequence Diagram")
+![Weather Wizard Sequence Diagram](https://github.com/catherinetsokur/weather-wizard/blob/master/docs/WeatherWizard-Sequence.png "Weather Wizard Sequence Diagram")
 
 ### Class
-!(https://github.com/catherinetsokur/weather-wizard/blob/master/docs/WeatherWizard-Class.png "Weather Wizard Class Diagram")
+![Weather Wizard Class Diagram](https://github.com/catherinetsokur/weather-wizard/blob/master/docs/WeatherWizard-Class.png "Weather Wizard Class Diagram")
 
 ## Notes
 This project has a room for improvements
