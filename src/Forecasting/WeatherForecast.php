@@ -22,7 +22,7 @@ class WeatherForecast
      * Array of hourly weather predictions
      * each element is an array with at least 2 properties:
      * - hour int from 0 to 23
-     * - degrees int (can be negative).
+     * - degrees number (can be negative).
      * @var array
      */
     protected $hourlyPredictions;
@@ -40,7 +40,7 @@ class WeatherForecast
      * @param array                    $hourlyPredictions Array of hourly weather predictions
      *                                                    each element is an array with at least 2 properties:
      *                                                    - hour int from 0 to 23
-     *                                                    - degrees int (can be negative).
+     *                                                    - degrees number (can be negative).
      */
     public function __construct(AbstractTemperatureScale $temperatureScale, string $city, int $day, array $hourlyPredictions)
     {
@@ -88,7 +88,7 @@ class WeatherForecast
      */
     public function setHourlyPredictions(array $hourlyPredictions)
     {
-        return $this->hourlyPredictions;
+        $this->hourlyPredictions = $hourlyPredictions;
     }
 
     /**

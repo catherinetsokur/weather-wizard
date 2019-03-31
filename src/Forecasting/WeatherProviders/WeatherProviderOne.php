@@ -68,13 +68,13 @@ class WeatherProviderOne extends AbstractWeatherProvider
               }
             }';
 
-        $responseDecoded = json_decode($response, true);
+        $responseDecoded = \json_decode($response, true);
         $obtainedScale = TemperatureScaleFactory::getByName($responseDecoded['predictions']['-scale']);
         $hourlyPredictions = [];
         foreach ($responseDecoded['predictions']['prediction'] as $value) {
             $hourlyPredictions[] = [
                 'hour' => \intval(\substr($value['time'], 0, 2)),
-                'degrees' => \intval($value['value']),
+                'degrees' => \floatval($value['value']),
             ];
         }
 
