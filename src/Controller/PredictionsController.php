@@ -17,7 +17,7 @@ class PredictionsController
      */
     public function getByCityToday($city, $temperatureScaleName)
     {
-        $wizard = new WeatherWizard(TemperatureScaleFactory::getByName($temperatureScaleName));
+        $wizard = new WeatherWizard(TemperatureScaleFactory::getByName($temperatureScaleName), []);
         $forecast = $wizard->predictForCityAndDay($city, \time());
 
         return JsonResponse::fromJsonString($forecast->getAsJson());
@@ -38,7 +38,7 @@ class PredictionsController
             return new Response('Requested day is out of range', 404);
         }
 
-        $wizard = new WeatherWizard(TemperatureScaleFactory::getByName($temperatureScaleName));
+        $wizard = new WeatherWizard(TemperatureScaleFactory::getByName($temperatureScaleName), []);
         $forecast = $wizard->predictForCityAndDay($city, $requestedDay);
 
         return JsonResponse::fromJsonString($forecast->getAsJson());

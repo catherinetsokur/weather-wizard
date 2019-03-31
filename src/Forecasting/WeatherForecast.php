@@ -10,30 +10,30 @@ class WeatherForecast
 
     protected $day;
 
-    protected $predictions;
+    protected $hourlyPredictions;
 
     /**
      * @var AbstractTemperatureScale
      */
     protected $temperatureScale;
 
-    public function __construct(AbstractTemperatureScale $temperatureScale, string $city, int $day, array $predictions)
+    public function __construct(AbstractTemperatureScale $temperatureScale, string $city, int $day, array $hourlyPredictions)
     {
         $this->temperatureScale = $temperatureScale;
         $this->city = $city;
         $this->day = $day;
-        $this->predictions = $predictions;
+        $this->hourlyPredictions = $hourlyPredictions;
     }
 
-    public function isSameTemperatureScale(AbstractTemperatureScale $scale)
+    public function hasSameTemperatureScale(AbstractTemperatureScale $scale)
     {
         return \get_class($this->temperatureScale) === \get_class($scale);
     }
 
     public function convertToTemperatureScale(AbstractTemperatureScale $scale)
     {
-        \array_walk($this->predictions, function (&$prediction) use ($scale) {
-            $prediction['degrees'] = $this->temperatureScale->convertToScale($prediction['degrees'], $scale);
+        \array_walk($this->hourlyPredictions, function (&$hourlyPrediction) use ($scale) {
+            $hourlyPrediction['degrees'] = $this->temperatureScale->convertToScale($hourlyPrediction['degrees'], $scale);
         });
         $this->temperatureScale = $scale;
     }
@@ -44,7 +44,7 @@ class WeatherForecast
             'city' => $this->city,
             'day' => \date('Ymd', $this->day),
             'scale' => $this->temperatureScale->getName(),
-            'predictions' => $this->predictions,
+            'hourlyPredictions' => $this->hourlyPredictions,
         ]);
     }
 }
