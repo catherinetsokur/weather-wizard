@@ -9,12 +9,12 @@ class FahrenheitTemperatureScale extends AbstractTemperatureScale
         return 'Fahrenheit';
     }
 
-    public function convertToCelsius(number $degrees): number
+    public function convertToCelsius(float $degrees): float
     {
         return ($degrees - 32) * 5 / 9;
     }
 
-    public function convertFromCelsius(number $degrees): number
+    public function convertFromCelsius(float $degrees): float
     {
         return $degrees * 9 / 5 + 32;
     }
